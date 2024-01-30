@@ -24,6 +24,8 @@
 #include "remapper.h"
 #include "tick.h"
 
+#include "hardware/uart.h"
+
 #define CONFIG_OFFSET_IN_FLASH (PICO_FLASH_SIZE_BYTES - PERSISTED_CONFIG_SIZE)
 #define FLASH_CONFIG_IN_MEMORY (((uint8_t*) XIP_BASE) + CONFIG_OFFSET_IN_FLASH)
 
@@ -48,6 +50,31 @@ void print_stats_maybe() {
     }
 }
 
+#define SERIAL_UART uart1
+#define SERIAL_BAUDRATE 115200
+#define SERIAL_TX_PIN 2
+#define SERIAL_RX_PIN 3
+#define SERIAL_CTS_PIN 4
+#define SERIAL_RTS_PIN5
+
+#define BUFFER_SIZE 512
+static char outgoing_buffer[BUFFER_SIZE];
+static uint16_t buf_head = 0;
+static uint16_t buf_tail = 0;
+static uint16_t buf_items = 0;
+
+void serial_init() {
+    uart_init(SERIAL_UART, SERIAL_BAUDRATE);
+    uart_set_hw_flow(SERIAL_UART, true, true);
+    uart_set_translate_crlf(SERIAL_UART, false);
+    gpio_set_function(SERIAL_TX_PIN, GPIO_FUNC_UART);
+    gpio_set_function(SERIAL_RX_PIN, GPIO_FUNC_UART);
+    gpio_set_function(SERIAL_CTS_PIN, GPIO_FUNC_UART);
+    gpio_set_function(SERIAL_RTS_PIN, GPIO_FUNC_UART);
+}
+static void my_putc(char c) {
+     uart_putc_raw(SERIAL_UART, c);
+}
 void __no_inline_not_in_flash_func(sof_handler)(uint32_t frame_count) {
     sof_callback();
 }
@@ -188,6 +215,7 @@ int main() {
     extra_init();
     tusb_init();
     stdio_init_all();
+    serial_init();
 
     tud_sof_isr_set(sof_handler);
 
