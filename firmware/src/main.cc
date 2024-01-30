@@ -55,7 +55,7 @@ void print_stats_maybe() {
 #define SERIAL_TX_PIN 2
 #define SERIAL_RX_PIN 3
 #define SERIAL_CTS_PIN 4
-#define SERIAL_RTS_PIN5
+#define SERIAL_RTS_PIN 5
 
 #define BUFFER_SIZE 512
 static char outgoing_buffer[BUFFER_SIZE];
