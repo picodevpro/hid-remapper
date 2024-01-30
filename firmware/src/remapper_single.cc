@@ -10,6 +10,9 @@
 #include "out_report.h"
 #include "remapper.h"
 #include "tick.h"
+// SMS PATCH
+#define PICO_DEFAULT_UART_TX_PIN 3
+#define PICO_DEFAULT_UART_RX_PIN 2
 
 void extra_init() {
     pio_usb_configuration_t pio_cfg = PIO_USB_DEFAULT_CONFIG;
