@@ -63,7 +63,7 @@ static uint16_t buf_head = 0;
 static uint16_t buf_tail = 0;
 static uint16_t buf_items = 0;
 
-void serial_init() {
+void bridge_serial_init() {
     uart_init(SERIAL_UART, SERIAL_BAUDRATE);
     uart_set_hw_flow(SERIAL_UART, true, true);
     uart_set_translate_crlf(SERIAL_UART, false);
@@ -72,7 +72,7 @@ void serial_init() {
     gpio_set_function(SERIAL_CTS_PIN, GPIO_FUNC_UART);
     gpio_set_function(SERIAL_RTS_PIN, GPIO_FUNC_UART);
 }
-static void my_putc(char c) {
+static void bridge_putc(char c) {
      uart_putc_raw(SERIAL_UART, c);
 }
 void __no_inline_not_in_flash_func(sof_handler)(uint32_t frame_count) {
@@ -215,7 +215,7 @@ int main() {
     extra_init();
     tusb_init();
     stdio_init_all();
-    serial_init();
+    bridge_serial_init();
 
     tud_sof_isr_set(sof_handler);
 
