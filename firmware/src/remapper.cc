@@ -16,6 +16,7 @@
 #include "our_descriptor.h"
 #include "platform.h"
 #include "remapper.h"
+#include "ascci_converter.h"
 
 #define MAX_REPORT_SIZE 64
 
@@ -779,6 +780,92 @@ int32_t eval_expr(uint8_t expr, uint64_t now, bool auto_repeat) {
         return stack[ptr];
     }
     return 0;
+}
+
+uint32_t get_pressed_key()
+{
+    uint32_t result = 0;
+    bool auto_repeat = false;
+    uint64_t now = get_time();
+
+    for (auto& rev_map : reverse_mapping) {
+        uint32_t target = rev_map.target;
+
+        if (rev_map.is_relative) {
+            for (auto& map_source : rev_map.sources) {
+                int32_t value = 0;
+                if ((map_source.usage & 0xFFFF0000) == EXPR_USAGE_PAGE) {
+                    if (layer_state_mask & map_source.layer_mask) {
+                        value = *map_source.input_state;
+                    }
+                } else if ((map_source.usage & 0xFFFF0000) == REGISTER_USAGE_PAGE) {
+                    uint32_t reg_number = (map_source.usage & 0xFFFF) - 1;
+                    if (reg_number < NREGISTERS) {
+                        value = registers[reg_number];
+                    }
+                } else {
+                    if (auto_repeat || map_source.is_relative) {
+                        if (map_source.sticky) {
+                            value = !!(*map_source.sticky_state & map_source.layer_mask) * map_source.scaling;
+                        } else {
+                            if (layer_state_mask & map_source.layer_mask) {
+                                int32_t state = map_source.hold ? map_source.tap_hold_state->hold : *map_source.input_state;
+                                value = (map_source.is_relative ? state : !!state) * map_source.scaling;
+                            }
+                        }
+                    }
+                }
+                if (value != 0) {
+                    if (target == V_SCROLL_USAGE || target == H_SCROLL_USAGE) {
+                        accumulated[target] += handle_scroll(map_source, target, value * RESOLUTION_MULTIPLIER, now);
+                    } else {
+                        accumulated[target] += value;
+                    }
+                }
+            }
+        } else {  // our_usage is absolute
+            int32_t value = 0;
+            for (auto const& map_source : rev_map.sources) {
+                if ((map_source.usage & 0xFFFF0000) == EXPR_USAGE_PAGE) {
+                    if (layer_state_mask & map_source.layer_mask) {
+                        value = *map_source.input_state / 1000;
+                    }
+                } else if ((map_source.usage & 0xFFFF0000) == REGISTER_USAGE_PAGE) {
+                    uint32_t reg_number = (map_source.usage & 0xFFFF) - 1;
+                    if (reg_number < NREGISTERS) {
+                        value = registers[reg_number] / 1000;
+                    }
+                } else {
+                    if (map_source.sticky) {
+                        if (*map_source.sticky_state & map_source.layer_mask) {
+                            value = 1;
+                        }
+                    } else {
+                        if ((layer_state_mask & map_source.layer_mask)) {
+                            if ((map_source.tap && map_source.tap_hold_state->tap) ||
+                                (map_source.hold && map_source.tap_hold_state->hold)) {
+                                value = 1;
+                            }
+                            if (!map_source.tap && !map_source.hold) {
+                                if (map_source.is_relative) {
+                                    if (*map_source.input_state * map_source.scaling > 0) {
+                                        value = 1;
+                                    }
+                                } else {
+                                    //TODO : Check if with the scannette this condition is called
+                                    if (*map_source.input_state) {
+                                        value = *map_source.input_state;
+                                        result = map_source.usage; // => Only this result is used
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return result;
 }
 
 void process_mapping(bool auto_repeat) {

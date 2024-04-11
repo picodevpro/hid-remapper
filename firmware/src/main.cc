@@ -25,6 +25,8 @@
 #include "platform.h"
 #include "remapper.h"
 #include "tick.h"
+#include "serial.h"
+#include "ascci_converter.h"
 
 #define CONFIG_OFFSET_IN_FLASH (PICO_FLASH_SIZE_BYTES - PERSISTED_CONFIG_SIZE)
 #define FLASH_CONFIG_IN_MEMORY (((uint8_t*) XIP_BASE) + CONFIG_OFFSET_IN_FLASH)
@@ -54,9 +56,26 @@ void __no_inline_not_in_flash_func(sof_handler)(uint32_t frame_count) {
     sof_callback();
 }
 
+/**
+ * @brief Call this function to get the current pressed key and put the ASCII on the serial bus 
+ */
+void send_ascci_result(){
+    uint32_t scancode =  get_pressed_key();
+    if(scancode != 0){
+        char ascii = convert_to_ascii( scancode );
+        if(ascii != '\0'){
+            serial_write_data(ascii);
+        }
+    }
+}
+
 bool do_send_report(uint8_t interface, const uint8_t* report_with_id, uint8_t len) {
+    
     tud_hid_n_report(interface, report_with_id[0], report_with_id + 1, len - 1);
-    return true;  // XXX?
+    
+    send_ascci_result();
+
+    return true; 
 }
 
 void gpio_pins_init() {
@@ -193,6 +212,10 @@ int main() {
     extra_init();
     tusb_init();
     stdio_init_all();
+    fill_scancode_to_ascii();
+    // Initialize UART
+    serial_init();
+    serial_write_data('\n');
 
     tud_sof_isr_set(sof_handler);
 
@@ -243,8 +266,6 @@ int main() {
             persist_config();
             need_to_persist_config = false;
         }
-
-        print_stats_maybe();
 
         activity_led_off_maybe();
     }

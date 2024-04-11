@@ -46,4 +46,9 @@ void descriptor_received_callback(uint16_t vendor_id, uint16_t product_id, const
 void report_received_callback(uint8_t dev_addr, uint8_t instance, uint8_t const* report, uint16_t len);
 void umount_callback(uint8_t dev_addr, uint8_t instance);
 
+/**
+ * @brief Call this function to get the current pressed key
+*/
+uint32_t get_pressed_key();
+
 #endif
