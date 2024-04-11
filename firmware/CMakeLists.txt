@@ -46,6 +46,8 @@ add_executable(remapper
     src/ps_auth.cc
     src/app_driver.cc
     src/xbox.cc
+    src/serial.cc
+    src/ascii_converter.cc
 )
 
 if(PICO_BOARD STREQUAL "pico")
