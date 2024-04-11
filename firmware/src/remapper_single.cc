@@ -51,8 +51,6 @@ void descriptor_received_callback(uint16_t vendor_id, uint16_t product_id, const
 }
 
 void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const* desc_report, uint16_t desc_len) {
-    printf("tuh_hid_mount_cb\n");
-
     uint8_t hub_addr;
     uint8_t hub_port;
     tuh_get_hub_addr_port(dev_addr, &hub_addr, &hub_port);
@@ -73,7 +71,6 @@ void umount_callback(uint8_t dev_addr, uint8_t instance) {
 }
 
 void tuh_hid_umount_cb(uint8_t dev_addr, uint8_t instance) {
-    printf("tuh_hid_umount_cb\n");
     umount_callback(dev_addr, instance);
 }
 
