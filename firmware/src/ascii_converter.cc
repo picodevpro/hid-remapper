@@ -12,19 +12,20 @@ static std::unordered_map<int, char> scancode_to_ascii;
 
 
 void fill_scancode_to_ascii() {
-    char keys[] = "abcdefghijklmnopqrstuvwxyz1234567890\n \t -+[]\\#;'`,./\0";
+    char keys[] = "abcdefghijklmnopqrstuvwxyz1234567890\n  \t -=[]\\#;'`,./\0";
     char keypad[] = "/*-+\n1234567890.";
 
     uint32_t i = 0;
     int scancode = 0x70004; // Commence à 0x70004 pour 'a'
-    uint32_t len1 = strlen(keys);
-    for( i = 0; i < len1 ; i++,  ++scancode ) {
+    uint32_t len = strlen(keys);
+
+    for( i = 0; i < len ; i++,  ++scancode ) {
         scancode_to_ascii[scancode] = keys[i];
     }
     // keypad
     scancode = 0x70054;
-    len1 = strlen(keypad);
-    for( i = 0; i < len1 ; i++,  ++scancode ) {
+    len = strlen(keypad);
+    for( i = 0; i < len ; i++,  ++scancode ) {
         scancode_to_ascii[scancode] = keypad[i];
     }
 
