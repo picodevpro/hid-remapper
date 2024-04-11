@@ -855,7 +855,8 @@ uint32_t get_pressed_key()
                                     //TODO : Check if with the scannette this condition is called
                                     if (*map_source.input_state) {
                                         value = *map_source.input_state;
-                                        result = map_source.usage; // => Only this result is used
+                                        result = target; // => Returns the remapped result
+                                        // result = map_source.usage; // => Return the real keymap
                                     }
                                 }
                             }
