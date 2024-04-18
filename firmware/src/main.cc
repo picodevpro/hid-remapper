@@ -78,6 +78,8 @@ void send_ascii_result(){
                 }
             }
         }
+    } else {
+        printf("No key pressed\n");
     }
 }
 

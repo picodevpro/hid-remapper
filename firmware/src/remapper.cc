@@ -862,7 +862,6 @@ uint32_t get_pressed_key(key_value_t *key_value, int size)
                                         value = 1;
                                     }
                                 } else {
-                                    //TODO : Check if with the scannette this condition is called
 //                                    if (*map_source.input_state) {
                                         if(result < (uint32_t)size) {
                                             key_value[result].keycode = target;
@@ -882,6 +881,7 @@ uint32_t get_pressed_key(key_value_t *key_value, int size)
             }
         }
     }
+     printf(" %ld key event\n", result);
     return result;
 }
 
