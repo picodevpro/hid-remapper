@@ -42,6 +42,8 @@ uint32_t prev_gpio_state = 0;
 uint64_t last_gpio_change[32] = { 0 };
 bool set_gpio_dir_pending = false;
 
+bool maj_on = false;
+
 void print_stats_maybe() {
     uint64_t now = time_us_64();
     if (now > next_print) {
@@ -59,12 +61,17 @@ void __no_inline_not_in_flash_func(sof_handler)(uint32_t frame_count) {
 /**
  * @brief Call this function to get the current pressed key and put the ASCII on the serial bus 
  */
-void send_ascci_result(){
+void send_ascii_result(){
     uint32_t scancode =  get_pressed_key();
     if(scancode != 0){
-        char ascii = convert_to_ascii( scancode );
-        if(ascii != '\0'){
-            serial_write_data(ascii);
+        // FIXME: Check on to process release key without generate a double tap ?
+        if(is_maj_key(scancode)){
+            maj_on = true;
+        }else{
+            char ascii = convert_to_ascii( scancode, maj_on );
+            if(ascii != '\0'){
+                serial_write_data(ascii);
+            }
         }
     }
 }
@@ -73,7 +80,7 @@ bool do_send_report(uint8_t interface, const uint8_t* report_with_id, uint8_t le
     
     tud_hid_n_report(interface, report_with_id[0], report_with_id + 1, len - 1);
     
-    send_ascci_result();
+    send_ascii_result();
 
     return true; 
 }
