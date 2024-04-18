@@ -69,7 +69,7 @@ void send_ascii_result(){
         for(int i =0; i<pressed; i++){
             uint32_t scancode = keys[i].keycode;
             if(is_maj_key(scancode)){
-                printf("Value: %ld\n", keys[i].value);
+//                printf("Value: %ld\n", keys[i].value);
                 maj_on = keys[i].value;
             } else {
                 char ascii = convert_to_ascii( scancode, maj_on );
@@ -79,7 +79,7 @@ void send_ascii_result(){
             }
         }
     } else {
-        printf("No key pressed\n");
+ //       printf("No key pressed\n");
     }
 }
 
@@ -230,7 +230,7 @@ int main() {
     // Initialize UART
     serial_init();
     serial_write_data('\n');
-    printf("UART REMAPPER READY\n");
+    printf("# OK UART REMAPPER READY\n");
 
     tud_sof_isr_set(sof_handler);
 

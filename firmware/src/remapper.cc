@@ -864,9 +864,9 @@ uint32_t get_pressed_key(key_value_t *key_value, int size)
                                             key_value[result].keycode = target;
                                             key_value[result].value = *map_source.input_state;
                                             result++;
-                                            printf("   res#%ld: code: 0x%08lx - value: %ld\n", result, key_value[result].keycode, key_value[result].value);
+                                          //  printf("   res#%ld: code: 0x%08lx - value: %ld\n", result, key_value[result].keycode, key_value[result].value);
                                         }  else {
-                                            printf(" Dropping key event (code: 0x%08lx - value: %ld) - buffer full\n", target, *map_source.input_state);
+                                         //   printf(" Dropping key event (code: 0x%08lx - value: %ld) - buffer full\n", target, *map_source.input_state);
                                         }
                                         // result = map_source.usage; // => Return the real keymap
                                     }
@@ -878,7 +878,7 @@ uint32_t get_pressed_key(key_value_t *key_value, int size)
             }
         }
     }
-     printf(" %ld key event\n", result);
+    // printf(" %ld key event\n", result);
     return result;
 }
 
