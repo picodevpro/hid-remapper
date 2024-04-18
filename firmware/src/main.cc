@@ -64,13 +64,13 @@ void __no_inline_not_in_flash_func(sof_handler)(uint32_t frame_count) {
 void send_ascii_result(){
     int size = 16;
     key_value_t keys[size] = {0};
-    uint32_t pressed =  get_pressed_key(keys, size);
+    int pressed = (int) get_pressed_key(keys, size);
     if(pressed != 0){
         for(int i =0; i<pressed; i++){
-            uint32_t scancode = keys[i].key;
+            uint32_t scancode = keys[i].keycode;
             if(is_maj_key(scancode)){
-                printf("Value: %ld\n", key.value);
-                maj_on = key.value;
+                printf("Value: %ld\n", keys[i].value);
+                maj_on = keys[i].value;
             } else {
                 char ascii = convert_to_ascii( scancode, maj_on );
                 if(ascii != '\0'){
