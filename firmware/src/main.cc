@@ -26,7 +26,7 @@
 #include "remapper.h"
 #include "tick.h"
 #include "serial.h"
-#include "ascci_converter.h"
+#include "ascii_converter.h"
 
 #define CONFIG_OFFSET_IN_FLASH (PICO_FLASH_SIZE_BYTES - PERSISTED_CONFIG_SIZE)
 #define FLASH_CONFIG_IN_MEMORY (((uint8_t*) XIP_BASE) + CONFIG_OFFSET_IN_FLASH)

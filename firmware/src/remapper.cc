@@ -16,7 +16,7 @@
 #include "our_descriptor.h"
 #include "platform.h"
 #include "remapper.h"
-#include "ascci_converter.h"
+#include "ascii_converter.h"
 
 #define MAX_REPORT_SIZE 64
 
@@ -790,16 +790,13 @@ uint32_t get_pressed_key(key_value_t *key_value, int size)
     {
         return 0;
     }
-    {
-        return 0;
-    }
     uint64_t now = get_time();
 
     for (auto& rev_map : reverse_mapping) {
         uint32_t target = rev_map.target;
 
         if (rev_map.is_relative) {
-		//printf("  Relative\n");
+//		  printf("  Relative\n");
             for (auto& map_source : rev_map.sources) {
                 int32_t value = 0;
                 if ((map_source.usage & 0xFFFF0000) == EXPR_USAGE_PAGE) {
@@ -833,7 +830,7 @@ uint32_t get_pressed_key(key_value_t *key_value, int size)
                 }
             }
         } else {  // our_usage is absolute
-	// printf(" absolute \n");
+//	   printf(" absolute \n");
 	    int32_t value = 0;
             for (auto const& map_source : rev_map.sources) {
                 if ((map_source.usage & 0xFFFF0000) == EXPR_USAGE_PAGE) {
