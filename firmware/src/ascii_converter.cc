@@ -52,7 +52,7 @@ uint8_t is_maj_key(uint32_t scancode)
 
 char convert_to_ascii(uint32_t scancode, bool maj) 
 {
-	printf("scancode 0x%08lx - maj: %d \n", scancode, maj);
+	printf("\nscancode 0x%08lx - maj: %d \n", scancode, maj);
 	if(maj){
     	    auto it = scancode_to_ascii_maj.find(scancode);
 	    if (it != scancode_to_ascii_maj.end()) {
