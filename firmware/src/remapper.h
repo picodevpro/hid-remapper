@@ -6,6 +6,12 @@
 #define GPIO_USAGE_PAGE 0xFFF40000
 #define DIGIPOT_USAGE_PAGE 0xFFF60000
 
+typedef struct {
+    uint32_t keycode;
+    int32_t value;
+} key_value_t;
+
+
 typedef bool (*send_report_t)(uint8_t interface, const uint8_t* report_with_id, uint8_t len);
 
 void set_mapping_from_config();
@@ -48,7 +54,10 @@ void umount_callback(uint8_t dev_addr, uint8_t instance);
 
 /**
  * @brief Call this function to get the current pressed key
+ @param key_value Pointer to the key_value_t struct where the key value will be stored
+ @param size Size of the key_value_t struct table
+ @return Number of filled key_value_t structs
 */
-uint32_t get_pressed_key();
+uint32_t get_pressed_key(key_value_t *key_value, int size);
 
 #endif

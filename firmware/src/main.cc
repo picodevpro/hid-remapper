@@ -62,15 +62,20 @@ void __no_inline_not_in_flash_func(sof_handler)(uint32_t frame_count) {
  * @brief Call this function to get the current pressed key and put the ASCII on the serial bus 
  */
 void send_ascii_result(){
-    uint32_t scancode =  get_pressed_key();
-    if(scancode != 0){
-        // FIXME: Check on to process release key without generate a double tap ?
-        if(is_maj_key(scancode)){
-            maj_on = true;
-        }else{
-            char ascii = convert_to_ascii( scancode, maj_on );
-            if(ascii != '\0'){
-                serial_write_data(ascii);
+    int size = 16;
+    key_value_t keys[size] = {0};
+    uint32_t pressed =  get_pressed_key(keys, size);
+    if(pressed != 0){
+        for(int i =0; i<pressed; i++){
+            uint32_t scancode = keys[i].key;
+            if(is_maj_key(scancode)){
+                printf("Value: %ld\n", key.value);
+                maj_on = key.value;
+            } else {
+                char ascii = convert_to_ascii( scancode, maj_on );
+                if(ascii != '\0'){
+                    serial_write_data(ascii);
+                }
             }
         }
     }
@@ -223,6 +228,7 @@ int main() {
     // Initialize UART
     serial_init();
     serial_write_data('\n');
+    printf("UART REMAPPER READY\n");
 
     tud_sof_isr_set(sof_handler);
 

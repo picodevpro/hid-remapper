@@ -3,6 +3,8 @@
 #include <cstdlib>
 #include "ascci_converter.h"
 
+#include <stdio.h>
+#include "pico/stdlib.h"
 
 /**
  * @brief Map used to get the correspondence between the scancode and the associated ASCII character.
@@ -50,10 +52,17 @@ uint8_t is_maj_key(uint32_t scancode)
 
 char convert_to_ascii(uint32_t scancode, bool maj) 
 {
-    auto it = scancode_to_ascii.find(scancode);
-    if (it != scancode_to_ascii.end()) {
-        return it->second;
-    } else {
+	printf("scancode 0x%08lx - maj: %d \n", scancode, maj);
+	if(maj){
+    	    auto it = scancode_to_ascii_maj.find(scancode);
+	    if (it != scancode_to_ascii_maj.end()) {
+	        return it->second;
+	    }
+	} else {
+    	    auto it = scancode_to_ascii.find(scancode);
+	    if (it != scancode_to_ascii.end()) {
+	        return it->second;
+	    }
+	}
         return '\0';
-    }
 }

@@ -782,16 +782,24 @@ int32_t eval_expr(uint8_t expr, uint64_t now, bool auto_repeat) {
     return 0;
 }
 
-uint32_t get_pressed_key()
+uint32_t get_pressed_key(key_value_t *key_value, int size);
 {
     uint32_t result = 0;
     bool auto_repeat = false;
+    if(key_value == NULL || size == 0)
+    {
+        return 0;
+    }
+    {
+        return 0;
+    }
     uint64_t now = get_time();
 
     for (auto& rev_map : reverse_mapping) {
         uint32_t target = rev_map.target;
 
         if (rev_map.is_relative) {
+		//printf("  Relative\n");
             for (auto& map_source : rev_map.sources) {
                 int32_t value = 0;
                 if ((map_source.usage & 0xFFFF0000) == EXPR_USAGE_PAGE) {
@@ -815,6 +823,8 @@ uint32_t get_pressed_key()
                         }
                     }
                 }
+
+	        *key_value = value;
                 if (value != 0) {
                     if (target == V_SCROLL_USAGE || target == H_SCROLL_USAGE) {
                         accumulated[target] += handle_scroll(map_source, target, value * RESOLUTION_MULTIPLIER, now);
@@ -824,6 +834,7 @@ uint32_t get_pressed_key()
                 }
             }
         } else {  // our_usage is absolute
+		// printf(" absolute \n");
             int32_t value = 0;
             for (auto const& map_source : rev_map.sources) {
                 if ((map_source.usage & 0xFFFF0000) == EXPR_USAGE_PAGE) {
@@ -854,8 +865,14 @@ uint32_t get_pressed_key()
                                 } else {
                                     //TODO : Check if with the scannette this condition is called
                                     if (*map_source.input_state) {
-                                        value = *map_source.input_state;
-                                        result = target; // => Returns the remapped result
+                                        if(result < size) {
+                                            key_value[result].keycode = target;
+                                            key_value[result].value = *map_source.input_state;
+                                            result++;
+                                            printf("   res#%d: code: 0x%08lx - value: %ld\n", result, key_value[result].keycode, key_value[result].value);
+                                        }  else {
+                                            printf(" Dropping key event!\n");
+                                        }
                                         // result = map_source.usage; // => Return the real keymap
                                     }
                                 }
