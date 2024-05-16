@@ -31,6 +31,8 @@
 #define CONFIG_OFFSET_IN_FLASH (PICO_FLASH_SIZE_BYTES - PERSISTED_CONFIG_SIZE)
 #define FLASH_CONFIG_IN_MEMORY (((uint8_t*) XIP_BASE) + CONFIG_OFFSET_IN_FLASH)
 
+#define VERSION "V1.0.0"
+
 uint64_t next_print = 0;
 
 mutex_t mutexes[(uint8_t) MutexId::N];
@@ -230,7 +232,9 @@ int main() {
     // Initialize UART
     serial_init();
     serial_write_data('\n');
-    printf("# OK UART REMAPPER READY\n");
+    printf("# OK UART REMAPPER READY ");
+    printf(VERSION);
+    printf("\n");
 
     tud_sof_isr_set(sof_handler);
 
